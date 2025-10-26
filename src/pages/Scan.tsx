@@ -57,7 +57,7 @@ const Scan = () => {
     formData.append("file", selectedFile);
 
     try {
-      const response = await fetch("https://agroscan1-production.up.railway.app/predict", {
+      const response = await fetch("https://agroscan-1.onrender.com/predict", {
         method: "POST",
         body: formData,
       });
