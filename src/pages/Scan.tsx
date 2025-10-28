@@ -86,7 +86,7 @@ const Scan = () => {
 
     setIsFetchingAdvice(true);
     try {
-      const response = await fetch("https://n8n.example.com/webhook/advice", {
+      const response = await fetch("https://hook.eu2.make.com/q2a51qipwk5fqi2yr7cu3pq91jyboe46", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -102,10 +102,10 @@ const Scan = () => {
 
       const data = await response.json();
       setTreatmentAdvice(data);
-      toast.success("Treatment advice received!");
+      toast.success("Treatment advice generated!");
     } catch (error) {
       console.error("Advice error:", error);
-      toast.error("Failed to fetch treatment advice. Please try again.");
+      toast.error("Unable to generate advice. Please try again.");
     } finally {
       setIsFetchingAdvice(false);
     }
