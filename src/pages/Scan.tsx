@@ -7,9 +7,8 @@ import { AlertCircle, Upload, Loader2, ArrowLeft, Sparkles } from "lucide-react"
 import { toast } from "sonner";
 
 interface PredictionResult {
-  disease: string;
+  class: string;
   confidence: number;
-  risk_level: string;
 }
 
 interface TreatmentAdvice {
@@ -68,10 +67,15 @@ const Scan = () => {
 
       const data = await response.json();
       setPrediction(data);
-      toast.success("Disease detected successfully!");
+      
+      if (data.class === "Uncertain") {
+        toast.warning("⚠️ Please upload a clearer image.");
+      } else {
+        toast.success("Disease detected successfully!");
+      }
     } catch (error) {
       console.error("Detection error:", error);
-      toast.error("Failed to detect disease. Please try again.");
+      toast.error("Backend unavailable, please try again later.");
     } finally {
       setIsDetecting(false);
     }
@@ -88,7 +92,7 @@ const Scan = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          disease: prediction.disease,
+          disease: prediction.class,
         }),
       });
 
@@ -107,18 +111,7 @@ const Scan = () => {
     }
   };
 
-  const getRiskColor = (riskLevel: string) => {
-    switch (riskLevel.toLowerCase()) {
-      case "high":
-        return "text-destructive";
-      case "medium":
-        return "text-warning";
-      case "low":
-        return "text-success";
-      default:
-        return "text-muted-foreground";
-    }
-  };
+  const isUncertain = prediction?.class === "Uncertain";
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
@@ -209,42 +202,49 @@ const Scan = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid gap-4 md:grid-cols-3">
+                {isUncertain && (
+                  <div className="p-4 bg-warning/10 rounded-lg border border-warning/20">
+                    <p className="text-sm text-warning-foreground flex items-start gap-2">
+                      <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                      <span>
+                        <strong>⚠️ Uncertain Detection:</strong> Please upload a clearer image of the plant leaf.
+                      </span>
+                    </p>
+                  </div>
+                )}
+                
+                <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Disease Name</p>
-                    <p className="text-lg font-semibold">{prediction.disease}</p>
+                    <p className="text-sm text-muted-foreground">Disease Detected</p>
+                    <p className="text-lg font-semibold">{prediction.class}</p>
                   </div>
                   <div className="space-y-1">
                     <p className="text-sm text-muted-foreground">Confidence</p>
                     <p className="text-lg font-semibold">{(prediction.confidence * 100).toFixed(1)}%</p>
                   </div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Risk Level</p>
-                    <p className={`text-lg font-semibold ${getRiskColor(prediction.risk_level)}`}>
-                      {prediction.risk_level}
-                    </p>
-                  </div>
                 </div>
 
-                <Button
-                  variant="accent"
-                  size="lg"
-                  onClick={handleGetAdvice}
-                  disabled={isFetchingAdvice}
-                  className="w-full"
-                >
-                  {isFetchingAdvice ? (
-                    <>
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                      Fetching Advice...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="h-5 w-5" />
-                      Get Treatment Advice
-                    </>
-                  )}
-                </Button>
+                {!isUncertain && (
+                  <Button
+                    variant="accent"
+                    size="lg"
+                    onClick={handleGetAdvice}
+                    disabled={isFetchingAdvice}
+                    className="w-full"
+                  >
+                    {isFetchingAdvice ? (
+                      <>
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        Fetching Advice...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-5 w-5" />
+                        Get Treatment Advice
+                      </>
+                    )}
+                  </Button>
+                )}
               </CardContent>
             </Card>
           )}
