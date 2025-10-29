@@ -87,11 +87,9 @@ const Scan = () => {
       const response = await fetch("https://hook.eu2.make.com/q2a51qipwk5fqi2yr7cu3pq91jyboe46", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "text/plain",
         },
-        body: JSON.stringify({
-          disease: prediction.class,
-        }),
+        body: prediction.class,
       });
 
       if (!response.ok) {
