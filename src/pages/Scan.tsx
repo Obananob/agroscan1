@@ -98,12 +98,30 @@ const Scan = () => {
         throw new Error("Failed to fetch treatment advice");
       }
 
-      const adviceText = await response.text();
-      setTreatmentAdvice({ advice: adviceText });
+      const rawText = await response.text();
+      
+      // Clean the response text
+      let cleanedText = rawText
+        // Remove common filler phrases and greetings
+        .replace(/^(Alright,?|Yes,?|Sure,?|Okay,?|Hello there!?|Hi there!?|Hey there!?)\s*/i, "")
+        .replace(/let's talk about/i, "Let's discuss")
+        .replace(/let me help you with/i, "Here's guidance on")
+        // Normalize line breaks and remove excessive whitespace
+        .replace(/\n{3,}/g, "\n\n")
+        .trim();
+
+      if (!cleanedText) {
+        throw new Error("No advice received");
+      }
+
+      setTreatmentAdvice({ advice: cleanedText });
       toast.success("Treatment advice generated!");
     } catch (error) {
       console.error("Advice error:", error);
-      toast.error("Unable to generate advice. Please try again.");
+      const errorMessage = error instanceof Error && error.message === "No advice received"
+        ? "No advice received. Please try again."
+        : "Unable to generate advice. Please try again.";
+      toast.error(errorMessage);
     } finally {
       setIsFetchingAdvice(false);
     }
