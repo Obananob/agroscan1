@@ -12,9 +12,7 @@ interface PredictionResult {
 }
 
 interface TreatmentAdvice {
-  disease: string;
-  treatment: string;
-  prevention: string;
+  advice: string;
 }
 
 const Scan = () => {
@@ -100,8 +98,8 @@ const Scan = () => {
         throw new Error("Failed to fetch treatment advice");
       }
 
-      const data = await response.json();
-      setTreatmentAdvice(data);
+      const adviceText = await response.text();
+      setTreatmentAdvice({ advice: adviceText });
       toast.success("Treatment advice generated!");
     } catch (error) {
       console.error("Advice error:", error);
@@ -261,19 +259,10 @@ const Scan = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  <div>
-                    <h3 className="font-semibold mb-2 text-foreground">Disease</h3>
-                    <p className="text-muted-foreground">{treatmentAdvice.disease}</p>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold mb-2 text-foreground">Treatment Advice</h3>
-                    <p className="text-muted-foreground">{treatmentAdvice.treatment}</p>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold mb-2 text-foreground">Preventive Measures</h3>
-                    <p className="text-muted-foreground">{treatmentAdvice.prevention}</p>
-                  </div>
+                <div className="prose prose-sm max-w-none">
+                  <p className="text-foreground whitespace-pre-wrap leading-relaxed">
+                    {treatmentAdvice.advice}
+                  </p>
                 </div>
 
                 <div className="mt-4 p-4 bg-warning/10 rounded-lg border border-warning/20">
