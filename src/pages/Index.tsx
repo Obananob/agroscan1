@@ -2,10 +2,15 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Leaf, Sparkles, Shield, Zap } from "lucide-react";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { getTranslation } from "@/translations";
 import heroImage from "@/assets/hero-plants.jpg";
 
 const Index = () => {
   const navigate = useNavigate();
+  const { language } = useLanguage();
+  const t = getTranslation(language);
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
@@ -22,19 +27,24 @@ const Index = () => {
         />
         <div className="absolute inset-0 bg-gradient-hero opacity-90 z-0" />
         
+        {/* Language Switcher */}
+        <div className="absolute top-4 right-4 z-20">
+          <LanguageSwitcher />
+        </div>
+        
         <div className="relative z-10 container mx-auto px-4 py-20 md:py-32">
           <div className="max-w-3xl mx-auto text-center space-y-8">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-background/80 backdrop-blur shadow-soft">
               <Leaf className="h-5 w-5 text-primary" />
-              <span className="text-sm font-medium text-foreground">AI-Powered Plant Disease Detection</span>
+              <span className="text-sm font-medium text-foreground">{t.aiPoweredDetection}</span>
             </div>
             
             <h1 className="text-4xl md:text-6xl font-bold text-primary-foreground leading-tight">
-              AgroScan
+              {t.heroTitle}
             </h1>
             
             <p className="text-xl md:text-2xl text-primary-foreground/90 font-medium">
-              Upload a leaf photo. Detect diseases instantly. Get AI-guided treatment advice.
+              {t.heroSubtitle}
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -45,7 +55,7 @@ const Index = () => {
                 className="text-lg px-8 py-6 h-auto"
               >
                 <Sparkles className="h-5 w-5" />
-                Get Started
+                {t.getStarted}
               </Button>
             </div>
           </div>
@@ -57,16 +67,14 @@ const Index = () => {
         <div className="max-w-4xl mx-auto">
           <Card className="shadow-strong">
             <CardHeader className="text-center">
-              <CardTitle className="text-3xl">About AgroScan</CardTitle>
+              <CardTitle className="text-3xl">{t.aboutTitle}</CardTitle>
               <CardDescription className="text-lg mt-2">
-                Empowering smallholder farmers with cutting-edge technology
+                {t.aboutSubtitle}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <p className="text-lg text-muted-foreground leading-relaxed">
-                AgroScan helps smallholder farmers identify crop diseases early using machine learning.
-                Our platform combines the power of FastAPI for rapid image processing, TensorFlow for
-                accurate disease detection, and n8n automation for intelligent treatment recommendations.
+                {t.aboutDescription}
               </p>
               
               <div className="grid md:grid-cols-3 gap-6 pt-6">
@@ -74,9 +82,9 @@ const Index = () => {
                   <div className="p-3 rounded-full bg-primary/10">
                     <Zap className="h-8 w-8 text-primary" />
                   </div>
-                  <h3 className="font-semibold text-lg">Instant Detection</h3>
+                  <h3 className="font-semibold text-lg">{t.instantDetection}</h3>
                   <p className="text-sm text-muted-foreground">
-                    Get disease identification in seconds using advanced AI models
+                    {t.instantDetectionDesc}
                   </p>
                 </div>
                 
@@ -84,9 +92,9 @@ const Index = () => {
                   <div className="p-3 rounded-full bg-accent/10">
                     <Sparkles className="h-8 w-8 text-accent" />
                   </div>
-                  <h3 className="font-semibold text-lg">AI Treatment Advice</h3>
+                  <h3 className="font-semibold text-lg">{t.aiTreatmentAdvice}</h3>
                   <p className="text-sm text-muted-foreground">
-                    Receive personalized treatment and prevention recommendations
+                    {t.aiTreatmentAdviceDesc}
                   </p>
                 </div>
                 
@@ -94,9 +102,9 @@ const Index = () => {
                   <div className="p-3 rounded-full bg-success/10">
                     <Shield className="h-8 w-8 text-success" />
                   </div>
-                  <h3 className="font-semibold text-lg">Early Detection</h3>
+                  <h3 className="font-semibold text-lg">{t.earlyDetection}</h3>
                   <p className="text-sm text-muted-foreground">
-                    Catch diseases before they spread and protect your crops
+                    {t.earlyDetectionDesc}
                   </p>
                 </div>
               </div>
@@ -108,7 +116,7 @@ const Index = () => {
       {/* How It Works Section */}
       <section className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto text-center space-y-8">
-          <h2 className="text-3xl font-bold">How It Works</h2>
+          <h2 className="text-3xl font-bold">{t.howItWorks}</h2>
           
           <div className="grid md:grid-cols-3 gap-8">
             <Card className="shadow-medium">
@@ -116,11 +124,11 @@ const Index = () => {
                 <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xl font-bold mb-4 mx-auto">
                   1
                 </div>
-                <CardTitle className="text-xl">Upload Image</CardTitle>
+                <CardTitle className="text-xl">{t.step1Title}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Take a clear photo of the affected plant leaf and upload it to AgroScan
+                  {t.step1Desc}
                 </p>
               </CardContent>
             </Card>
@@ -130,11 +138,11 @@ const Index = () => {
                 <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xl font-bold mb-4 mx-auto">
                   2
                 </div>
-                <CardTitle className="text-xl">AI Analysis</CardTitle>
+                <CardTitle className="text-xl">{t.step2Title}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Our AI model analyzes the image and identifies potential diseases with confidence scores
+                  {t.step2Desc}
                 </p>
               </CardContent>
             </Card>
@@ -144,11 +152,11 @@ const Index = () => {
                 <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xl font-bold mb-4 mx-auto">
                   3
                 </div>
-                <CardTitle className="text-xl">Get Advice</CardTitle>
+                <CardTitle className="text-xl">{t.step3Title}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Receive detailed treatment recommendations and preventive measures for your crops
+                  {t.step3Desc}
                 </p>
               </CardContent>
             </Card>
@@ -161,12 +169,12 @@ const Index = () => {
         <div className="container mx-auto px-4 py-8">
           <div className="text-center space-y-4">
             <p className="text-sm text-muted-foreground">
-              Powered by <span className="font-semibold text-foreground">FastAPI</span> •{" "}
+              {t.poweredBy} <span className="font-semibold text-foreground">FastAPI</span> •{" "}
               <span className="font-semibold text-foreground">TensorFlow</span> •{" "}
               <span className="font-semibold text-foreground">n8n</span>
             </p>
             <p className="text-xs text-muted-foreground">
-              © 2025 AgroScan. Built with ❤️ for farmers.
+              © 2025 AgroScan. {t.builtWithLove}
             </p>
           </div>
         </div>

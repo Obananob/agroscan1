@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { AlertCircle, Upload, Loader2, ArrowLeft, Sparkles } from "lucide-react";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { getTranslation } from "@/translations";
 import { toast } from "sonner";
 
 interface PredictionResult {
@@ -17,6 +20,9 @@ interface TreatmentAdvice {
 
 const Scan = () => {
   const navigate = useNavigate();
+  const { language } = useLanguage();
+  const t = getTranslation(language);
+  
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const [isDetecting, setIsDetecting] = useState(false);
@@ -28,11 +34,11 @@ const Scan = () => {
     const file = e.target.files?.[0];
     if (file) {
       if (!file.type.startsWith("image/")) {
-        toast.error("Please select an image file");
+        toast.error(t.selectImageFile);
         return;
       }
       if (file.size > 10 * 1024 * 1024) {
-        toast.error("File size should be less than 10MB");
+        toast.error(t.fileSizeError);
         return;
       }
       setSelectedFile(file);
@@ -45,7 +51,7 @@ const Scan = () => {
 
   const handleDetect = async () => {
     if (!selectedFile) {
-      toast.error("Please select an image first");
+      toast.error(t.selectImageFirst);
       return;
     }
 
@@ -67,13 +73,13 @@ const Scan = () => {
       setPrediction(data);
       
       if (data.class === "Uncertain") {
-        toast.warning("⚠️ Please upload a clearer image.");
+        toast.warning(t.uploadClearerImage);
       } else {
-        toast.success("Disease detected successfully!");
+        toast.success(t.detectedSuccessfully);
       }
     } catch (error) {
       console.error("Detection error:", error);
-      toast.error("Backend unavailable, please try again later.");
+      toast.error(t.backendUnavailable);
     } finally {
       setIsDetecting(false);
     }
@@ -113,12 +119,12 @@ const Scan = () => {
       }
 
       setTreatmentAdvice({ advice: cleanedText });
-      toast.success("Treatment advice generated!");
+      toast.success(t.treatmentGenerated);
     } catch (error) {
       console.error("Advice error:", error);
       const errorMessage = error instanceof Error && error.message === "No advice received"
-        ? "No advice received. Please try again."
-        : "Unable to generate advice. Please try again.";
+        ? t.noAdviceReceived
+        : t.unableToGenerateAdvice;
       toast.error(errorMessage);
     } finally {
       setIsFetchingAdvice(false);
@@ -131,11 +137,14 @@ const Scan = () => {
     <div className="min-h-screen bg-gradient-subtle">
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <h1 className="text-2xl font-bold text-primary">AgroScan</h1>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <h1 className="text-2xl font-bold text-primary">{t.agroscan}</h1>
+            </div>
+            <LanguageSwitcher />
           </div>
         </div>
       </header>
@@ -143,14 +152,14 @@ const Scan = () => {
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="space-y-6">
           <div className="text-center space-y-2">
-            <h2 className="text-3xl md:text-4xl font-bold">Detect Plant Diseases</h2>
-            <p className="text-muted-foreground">Upload a clear photo of a plant leaf to get started</p>
+            <h2 className="text-3xl md:text-4xl font-bold">{t.detectPlantDiseases}</h2>
+            <p className="text-muted-foreground">{t.uploadPrompt}</p>
           </div>
 
           <Card className="shadow-medium">
             <CardHeader>
-              <CardTitle>Upload Leaf Image</CardTitle>
-              <CardDescription>Select an image file (JPG, PNG, WEBP) - Max 10MB</CardDescription>
+              <CardTitle>{t.uploadLeafImage}</CardTitle>
+              <CardDescription>{t.fileRequirements}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex flex-col items-center justify-center gap-4">
@@ -169,9 +178,9 @@ const Scan = () => {
                       <div className="flex flex-col items-center justify-center pt-5 pb-6">
                         <Upload className="w-12 h-12 mb-4 text-muted-foreground" />
                         <p className="mb-2 text-sm text-muted-foreground">
-                          <span className="font-semibold">Click to upload</span> or drag and drop
+                          <span className="font-semibold">{t.clickToUpload}</span> {t.dragAndDrop}
                         </p>
-                        <p className="text-xs text-muted-foreground">PNG, JPG, WEBP up to 10MB</p>
+                        <p className="text-xs text-muted-foreground">{t.fileTypes}</p>
                       </div>
                     )}
                     <Input
@@ -194,12 +203,12 @@ const Scan = () => {
                   {isDetecting ? (
                     <>
                       <Loader2 className="h-5 w-5 animate-spin" />
-                      Detecting...
+                      {t.detecting}
                     </>
                   ) : (
                     <>
                       <Sparkles className="h-5 w-5" />
-                      Detect Disease
+                      {t.detectDisease}
                     </>
                   )}
                 </Button>
@@ -212,7 +221,7 @@ const Scan = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <AlertCircle className="h-5 w-5 text-primary" />
-                  Detection Results
+                  {t.detectionResults}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -221,7 +230,7 @@ const Scan = () => {
                     <p className="text-sm text-warning-foreground flex items-start gap-2">
                       <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
                       <span>
-                        <strong>⚠️ Uncertain Detection:</strong> Please upload a clearer image of the plant leaf.
+                        <strong>{t.uncertainWarning}</strong> {t.uncertainMessage}
                       </span>
                     </p>
                   </div>
@@ -229,11 +238,11 @@ const Scan = () => {
                 
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Disease Detected</p>
+                    <p className="text-sm text-muted-foreground">{t.diseaseDetected}</p>
                     <p className="text-lg font-semibold">{prediction.class}</p>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Confidence</p>
+                    <p className="text-sm text-muted-foreground">{t.confidence}</p>
                     <p className="text-lg font-semibold">{(prediction.confidence * 100).toFixed(1)}%</p>
                   </div>
                 </div>
@@ -249,12 +258,12 @@ const Scan = () => {
                     {isFetchingAdvice ? (
                       <>
                         <Loader2 className="h-5 w-5 animate-spin" />
-                        Fetching Advice...
+                        {t.fetchingAdvice}
                       </>
                     ) : (
                       <>
                         <Sparkles className="h-5 w-5" />
-                        Get Treatment Advice
+                        {t.getTreatmentAdvice}
                       </>
                     )}
                   </Button>
@@ -268,10 +277,10 @@ const Scan = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Sparkles className="h-5 w-5 text-accent" />
-                  AI Treatment Advice
+                  {t.aiTreatmentAdviceTitle}
                 </CardTitle>
                 <CardDescription>
-                  AI-generated advice — Please confirm with an agronomist before applying treatments
+                  {t.aiAdviceDisclaimer}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -285,9 +294,7 @@ const Scan = () => {
                   <p className="text-sm text-warning-foreground flex items-start gap-2">
                     <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
                     <span>
-                      <strong>Disclaimer:</strong> This is AI-generated advice based on the detected disease.
-                      Always consult with a certified agronomist or agricultural expert before applying any
-                      treatments to your crops.
+                      <strong>{t.disclaimerTitle}</strong> {t.disclaimerText}
                     </span>
                   </p>
                 </div>
