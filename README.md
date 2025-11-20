@@ -1,73 +1,203 @@
-# Welcome to your Lovable project
+AgroScan – AI-Powered Plant Disease Detection
 
-## Project info
+Hackathon Project Submission
 
-**URL**: https://lovable.dev/projects/17c5e41f-1c57-4b57-9e5a-da2567bb0710
+AgroScan is an AI-driven web platform designed to help farmers identify plant leaf diseases quickly and accurately. By combining a custom-trained deep learning model with a modern web interface and automated treatment-generation system, AgroScan provides accessible crop health intelligence for farmers, agronomists, and agricultural stakeholders.
 
-## How can I edit this code?
 
-There are several ways of editing your application.
+---
 
-**Use Lovable**
+Overview
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/17c5e41f-1c57-4b57-9e5a-da2567bb0710) and start prompting.
+AgroScan allows users to upload or capture an image of a plant leaf, detects the disease using a TensorFlow-based convolutional neural network (CNN), and then generates treatment guidance using an AI text generation workflow. The goal is to enable farmers to make fast, informed decisions that reduce crop losses and improve productivity.
 
-Changes made via Lovable will be committed automatically to this repo.
 
-**Use your preferred IDE**
+---
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Key Features
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+1. AI Disease Detection
 
-Follow these steps:
+Custom CNN model trained on a Kaggle dataset of plant leaf diseases.
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+Covers 13 disease classes.
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+Trained for 100 epochs, achieving approximately 98% accuracy.
 
-# Step 3: Install the necessary dependencies.
-npm i
+Exported as a .keras file and served through a FastAPI backend.
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+
+2. Modern Web Interface
+
+Built using Lovable’s Next.js generator.
+
+Fully responsive and mobile-friendly.
+
+Landing page and streamlined "Get Started" workflow.
+
+Two input modes:
+
+Upload an image from device
+
+Capture a leaf image using the device camera (live preview and retake options)
+
+
+
+3. Real-Time Predictions
+
+Images are sent to a FastAPI server deployed on Render.
+
+The backend loads the CNN model, processes the image, and returns a JSON response identifying the disease and its confidence score.
+
+
+4. Automated Treatment Advice
+
+After prediction, disease information is forwarded to a Make.com webhook.
+
+A language model generates practical, field-safe treatment recommendations based on the detected disease.
+
+Advice is returned to the frontend and displayed to the user.
+
+
+
+---
+
+Architecture
+
+AgroScan uses a distributed architecture optimized for speed, maintainability, and modularity.
+
+User (Vercel Frontend)
+      →
+Upload / Camera Capture
+      →
+FastAPI Backend (Render)
+      →
+TensorFlow CNN Model (agroscanmodel.keras)
+      →
+Disease Prediction (JSON)
+      →
+Make.com Webhook
+      →
+AI Treatment Advice
+      →
+Displayed Back to User
+
+
+---
+
+CNN Model Details
+
+Framework: TensorFlow / Keras
+
+Model file: agroscanmodel.keras
+
+Input resolution: 224 × 224 RGB
+
+Preprocessing: normalization (/255)
+
+Classes: includes tomato, pepper, maize, potato diseases, and healthy category
+
+Achieved approximately 98% validation accuracy
+
+
+
+---
+
+FastAPI Prediction Output Example
+
+POST /predict
+
+Response:
+
+{
+  "disease": "Tomato Late Blight",
+  "confidence": 0.9741
+}
+
+
+---
+
+Technology Stack
+
+Frontend
+
+Next.js (Lovable-generated)
+
+React
+
+TailwindCSS
+
+Deployed on Vercel
+
+
+Backend
+
+FastAPI
+
+TensorFlow / Keras
+
+Pillow
+
+NumPy
+
+Deployed on Render
+
+
+AI Treatment Layer
+
+Make.com automated workflow
+
+LLM-generated advisory text
+
+
+
+---
+
+Local Development
+
+Backend Setup
+
+pip install fastapi uvicorn tensorflow pillow numpy
+uvicorn main:app --reload
+
+Frontend Setup
+
+npm install
 npm run dev
-```
 
-**Edit a file directly in GitHub**
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
+Real-World Impact
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+AgroScan supports farmers by enabling early disease detection, improving decision-making, reducing crop damage, and promoting sustainable farming practices. This contributes to food security and affordable access to precision agriculture tools.
 
-## What technologies are used for this project?
 
-This project is built with:
+---
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Future Enhancements
 
-## How can I deploy this project?
+User accounts with saved scan history
 
-Simply open [Lovable](https://lovable.dev/projects/17c5e41f-1c57-4b57-9e5a-da2567bb0710) and click on Share -> Publish.
+Multi-language interface and translations
 
-## Can I connect a custom domain to my Lovable project?
+GPS-based disease context
 
-Yes, you can!
+Weather-integrated disease risk level
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+Offline image capture and offline-first mode
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Support for additional crops and diseases
+
+PDF export of plant health reports
+
+Premium advisory tiers
+
+
+
+---
+
+Author
+
+Oni-Bashir Atiatunnasir Arike
+Project: AgroScan
